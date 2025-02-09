@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\RouteResources;
 use App\Models\Route;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class RoutesController extends Controller
@@ -32,6 +34,17 @@ class RoutesController extends Controller
             'keterangan' => $keterangan
         ];
     }
+    public function autostart()
+    {
+        // Hitung tanggal 3 hari yang lalu
+        $satuhari = Carbon::now()->subDays(1);
+
+        // Hapus data dengan status 'invalid' yang lebih lama dari 3 hari
+        $deletedRecords = Route::where('created_at', '<', $satuhari)
+            ->delete();
+
+        return redirect()->back()->with('success', 'Data Scan QR yang Lama Telah di Hapus');
+    }
     function startLocation(Request $request) {
         $routes = new Route();
         $routes->userid = $request->userid;
@@ -42,10 +55,7 @@ class RoutesController extends Controller
         $routes->info = $request->info;
         $berhasil = $routes->save();
         if ($berhasil) {
-            return response()->json([
-                'success' => true,
-                'message' => 'data berhasil ditambahkan'
-            ]);
+            return new RouteResources($request);
         }else{
             return response()->json([
                 'success' => false,

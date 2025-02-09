@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\Route;
+use Carbon\Carbon;
+use GuzzleHttp\Psr7\Request;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 
 class LoginController extends Controller
@@ -20,7 +22,11 @@ class LoginController extends Controller
     */
 
     use AuthenticatesUsers;
-
+    // protected function authenticated(Request $request, $user)
+    // {
+    //     $user->last_seen = Carbon::now()->format('Y-m-d H:i:s');
+    //     $user->save();
+    // }
     /**
      * Where to redirect users after login.
      *
@@ -37,8 +43,13 @@ class LoginController extends Controller
     {
         return 'nik';
     }
+
+    
+
+
     public function __construct()
     {
+
         $this->middleware('guest')->except('logout');
         $this->middleware('auth')->only('logout');
     }
